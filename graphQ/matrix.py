@@ -30,7 +30,7 @@ class Matrix:
                 w = st.pop()
                 tmp.append(w)
                 stackMember[w] = False
-            self.cycles.append(tmp)
+            self.cycles.append(tmp[::-1])
 
     def SCC(self):
         V = len(self.graph)
@@ -43,7 +43,7 @@ class Matrix:
                 self.SCCUtil(i, low, disc, stackMember, st)
         self.cycles = [c for c in self.cycles if len(c) > 1]
     def sub_SCC(self):
-        self.sub_cycles = {frozenset(c):set() for c in self.cycles}
+        self.sub_cycles = {tuple(c):set() for c in self.cycles}
         for cycle in self.sub_cycles:
             for i in range(2,len(cycle)):
                 for test_cycle in combinations(cycle,r=i):
@@ -54,7 +54,7 @@ class Matrix:
                     for v in test_cycle:
                         test_m.graph[mapping[v]] = set(mapping[e] for e in (self.graph[v] & test_cycle))
                     test_m.SCC()
-                    self.sub_cycles[cycle] |= set(frozenset(reverse_mapping[v] for v in test_m_cycle) for test_m_cycle in test_m.cycles)
+                    self.sub_cycles[cycle] |= set(tuple(reverse_mapping[v] for v in test_m_cycle) for test_m_cycle in test_m.cycles)
 if __name__ == "__main__":
 
     m = Matrix()
@@ -65,6 +65,8 @@ if __name__ == "__main__":
     m.addEdge(3,0)
     m.addEdge(3,1)
     m.addEdge(4,2)
+    m.addEdge(1,5)
+    m.addEdge(5,0)
 
     m.SCC()
     m.sub_SCC()
