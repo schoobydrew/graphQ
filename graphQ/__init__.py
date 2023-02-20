@@ -1,2 +1,1 @@
-from gqlspection import GQLSchema
 

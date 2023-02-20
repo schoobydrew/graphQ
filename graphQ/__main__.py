@@ -1,4 +1,3 @@
-from gqlspection import GQLSchema
 import argparse
 import json
 
@@ -12,5 +11,4 @@ if args.file:
         data = json.load(f)
         breakpoint()
 if args.url:
-    schema = GQLSchema(url=args.url)
     breakpoint()
