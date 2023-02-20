@@ -2,6 +2,7 @@ import requests
 import json
 import graphql
 import re
+from graphQ.matrix import Matrix
 DEFAULT_REGEX = "|".join(
     [
         r"pass",
@@ -31,10 +32,33 @@ class Graph:
         elif introspection:
             introspection = introspection
         self.schema = load_introspection(introspection)
-    def to_matrix(self,a):
-        # s.get_type("type").fields["a"].type.fields["b].type
-        # s.get_type("Query").fields["function"].type.of_type.name
-        ...
+    def to_matrix(self):
+        def get_name(o):
+            try:
+                return o.name
+            except:
+                return get_name(o.of_type)
+        self.schema.get_type_map().keys()
+        trimmed = [k for k,v in self.schema.get_type_map().items() if isinstance(v,graphql.type.definition.GraphQLObjectType) and not k.startswith("__")]
+        mapping = {k:idx for idx,k in enumerate(trimmed)}
+        function_roots = [i.name for i in [self.schema.get_query_type(),self.schema.get_mutation_type(),self.schema.get_subscription_type()] if i]
+        matrix = Matrix()
+        for obj_name in trimmed:
+            src = mapping[obj_name]
+            matrix.addVertex(src)
+            if obj_name in function_roots:
+                for k,v in self.schema.get_type(obj_name).fields.items():
+                    dst = get_name(v.type)
+                    dst = mapping.get(dst,False)
+                    if dst != False:
+                        matrix.addEdge(src,dst)
+            else:
+                for k,v in self.schema.get_type(obj_name).fields.items():
+                    dst = get_name(v.type)
+                    dst = mapping.get(dst,False)
+                    if dst != False:
+                        matrix.addEdge(src,dst)
+        return trimmed,mapping,matrix
     def get_sensitive(self,pattern=DEFAULT_REGEX):
         def isInteresting(s):
             matches = re.findall(pattern, s, re.IGNORECASE)

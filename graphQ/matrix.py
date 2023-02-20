@@ -6,10 +6,13 @@ class Matrix:
         self.graph = defaultdict(set)
         self.Time = 0
         self.cycles = []
+    
+    def addVertex(self,v):
+        self.graph[v] |= set()
 
     def addEdge(self, u, v):
         self.graph[u] |= set((v,))
-        self.graph[v] |= set()
+        self.addVertex(v)
 
     def SCCUtil(self, u, low, disc, stackMember, st):
         disc[u] = self.Time
