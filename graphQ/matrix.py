@@ -6,6 +6,7 @@ class Matrix:
         self.graph = defaultdict(set)
         self.Time = 0
         self.cycles = []
+        self.sub_cycles = {}
     
     def addVertex(self,v):
         self.graph[v] |= set()
