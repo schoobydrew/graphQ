@@ -63,6 +63,7 @@ class Graph:
         def isInteresting(s):
             matches = re.findall(pattern, s, re.IGNORECASE)
             return bool(matches)
+        pattern = pattern or DEFAULT_REGEX
         poi = {
             "Interesting Functions Names": {},
             "Interesting Node Names": [],
