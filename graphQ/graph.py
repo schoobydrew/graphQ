@@ -80,6 +80,22 @@ class Graph:
                 if findings:
                     poi["Interesting Field Names"][m] = findings
         return poi
+    def detect_cycles(self,top_only=False):
+        trimmed,mapping,matrix = self.to_matrix()
+        matrix.SCC()
+        cycles = matrix.sub_cycles or matrix.cycles
+        if top_only:
+            result = []
+            for cycle in matrix.cycles:
+                result.append([trimmed[c] for c in cycle])
+            return result
+        else:
+            matrix.sub_SCC()
+            result = {}
+            for cycle in matrix.sub_cycles:
+                mapped_cycle = tuple(trimmed[c] for c in cycle)
+                result[mapped_cycle] = set(tuple(trimmed[c] for c in sub_cycle) for sub_cycle in matrix.sub_cycles[cycle])
+            return result
 
 def remote_introspection(url,additional_headers=None):
     headers = {"Content-Type":"application/json"}
