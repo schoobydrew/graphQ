@@ -22,7 +22,27 @@ if not g:
     exit(0)
 if args.cycles:
     cycles = g.detect_cycles(top_only=args.top_cycles)
-    print(cycles)
+    print(f"Found {len(cycles)} composite cycles")
+    for idx,cycle in enumerate(cycles):
+        print(idx)
+        print(cycle)
+        if not args.top_cycles:
+            sub_cycles = cycles[cycle]
+            print(f"Found {len(cycles)} sub cycles")
+            for sidx,sub_cycle in enumerate(sub_cycles):
+                print(f"{idx}-{sidx}")
+                print(sub_cycle)
+
 if args.poi:
     poi = g.get_sensitive(pattern=args.poi_regex)
-    print(poi)
+    print("Interesting Functions Names")
+    for root,funcs in poi["Interesting Functions Names"].items():
+        for func in funcs:
+            print(f"\t{root} - {func}")
+    print("Interesting Field Names")
+    for node,fields in poi["Interesting Field Names"].items():
+        for field in fields:
+            print(f"\t{node} - {field}")
+    print("Interesting Node Names")
+    for node in poi["Interesting Node Names"]:
+        print(f"\t{node}")
