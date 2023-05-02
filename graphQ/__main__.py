@@ -19,17 +19,20 @@ ap.add_argument(
     "-p", "--poi", default=False, action="store_true", help="find points of interest"
 )
 ap.add_argument("-pr", "--poi-regex", help="regex to find points of interest")
+ap.add_argument("-s", "--save", help="filepath to write introspection")
 args = ap.parse_args()
 
 g = None
 if args.file:
-    with open(args.file) as f:
-        data = json.load(f)
+    g = Graph(file_path=args.file)
 if args.url:
     g = Graph(url=args.url)
 if not g:
     print("FILE or URL must be set, graph schema not loaded")
     exit(0)
+if args.save:
+    with open(args.save, "w") as f:
+        json.dump(g.introspection_data, f)
 if args.cycles:
     cycles = g.detect_cycles(top_only=args.top_cycles)
     print(f"Found {len(cycles)} composite cycles")
@@ -38,7 +41,7 @@ if args.cycles:
         print(cycle)
         if not args.top_cycles:
             sub_cycles = cycles[cycle]
-            print(f"Found {len(cycles)} sub cycles")
+            print(f"Found {len(sub_cycles)} sub cycles")
             for sidx, sub_cycle in enumerate(sub_cycles):
                 print(f"{idx}-{sidx}")
                 print(sub_cycle)

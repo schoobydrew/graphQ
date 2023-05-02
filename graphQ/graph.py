@@ -35,6 +35,7 @@ class Graph:
                 introspection = json.load(f)
         elif introspection:
             introspection = introspection
+        self.introspection_data = introspection
         self.schema = load_introspection(introspection)
 
     def to_matrix(self):
