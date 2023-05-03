@@ -45,10 +45,10 @@ class Graph:
             except:
                 return get_name(o.of_type)
 
-        self.schema.get_type_map().keys()
+        # self.schema.type_map.keys()
         trimmed = [
             k
-            for k, v in self.schema.get_type_map().items()
+            for k, v in self.schema.type_map.items()
             if isinstance(v, graphql.type.definition.GraphQLObjectType)
             and not k.startswith("__")
         ]
@@ -56,9 +56,9 @@ class Graph:
         function_roots = [
             i.name
             for i in [
-                self.schema.get_query_type(),
-                self.schema.get_mutation_type(),
-                self.schema.get_subscription_type(),
+                self.schema.query_type,
+                self.schema.mutation_type,
+                self.schema.subscription_type
             ]
             if i
         ]
@@ -91,14 +91,14 @@ class Graph:
             "Interesting Node Names": [],
             "Interesting Field Names": {},
         }
-        mapping = list(self.schema.get_type_map().keys())
-        mapping.remove(self.schema.get_query_type().name)
-        mapping.remove(self.schema.get_mutation_type().name)
-        poi["Interesting Functions Names"][self.schema.get_query_type().name] = [
-            i for i in self.schema.get_query_type().fields.keys() if isInteresting(i)
+        mapping = list(self.schema.type_map.keys())
+        mapping.remove(self.schema.query_type.name)
+        mapping.remove(self.schema.mutation_type.name)
+        poi["Interesting Functions Names"][self.schema.query_type.name] = [
+            i for i in self.schema.query_type.fields.keys() if isInteresting(i)
         ]
-        poi["Interesting Functions Names"][self.schema.get_mutation_type().name] = [
-            i for i in self.schema.get_mutation_type().fields.keys() if isInteresting(i)
+        poi["Interesting Functions Names"][self.schema.mutation_type.name] = [
+            i for i in self.schema.mutation_type.fields.keys() if isInteresting(i)
         ]
         poi["Interesting Node Names"] = [i for i in mapping if isInteresting(i)]
         for m in mapping:
@@ -137,7 +137,7 @@ def remote_introspection(url, additional_headers=None):
     headers = {"Content-Type": "application/json"}
     headers.update(additional_headers if additional_headers else {})
     res = requests.post(
-        url, headers=headers, json={"query": graphql.introspection_query}
+        url, headers=headers, json={"query": graphql.get_introspection_query()}
     )
     return res.json()
 
