@@ -1,5 +1,6 @@
 import argparse
 import json
+import yaml
 from graphQ import Graph
 
 ap = argparse.ArgumentParser()
@@ -20,13 +21,14 @@ ap.add_argument(
 )
 ap.add_argument("-pr", "--poi-regex", help="regex to find points of interest")
 ap.add_argument("-s", "--save", help="filepath to write introspection")
+ap.add_argument("-H", "--headers", action="append", default=[])
 args = ap.parse_args()
 
 g = None
 if args.file:
     g = Graph(file_path=args.file)
 if args.url:
-    g = Graph(url=args.url)
+    g = Graph(url=args.url, additional_headers=yaml.safe_load("\n".join(args.headers)))
 if not g:
     print("FILE or URL must be set, graph schema not loaded")
     exit(0)
